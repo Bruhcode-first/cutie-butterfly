@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>For You Mariam ✨</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Lato:wght@300;400&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --gold: #fde68a; }
+
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      font-family: 'Lato', sans-serif;
+      background: #0f0720;
+    }
+
+    #bg {
+      position: fixed; inset: 0; z-index: 0;
+      background: radial-gradient(ellipse at 20% 25%, #3b0764 0%, transparent 55%),
+                  radial-gradient(ellipse at 82% 72%, #500724 0%, transparent 55%),
+                  linear-gradient(135deg, #0c0518 0%, #1c0a33 50%, #0c0518 100%);
+    }
+    #bg::after {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 42%, rgba(253,230,138,.08) 0%, transparent 70%);
+      animation: shimmer 9s ease-in-out infinite alternate;
+    }
+    @keyframes shimmer { from{opacity:.35;transform:scale(1)} to{opacity:1;transform:scale(1.12)} }
+
+    #vignette {
+      position: fixed; inset: 0; z-index: 5; pointer-events: none;
+      box-shadow: inset 0 0 220px 60px rgba(8,3,18,.78);
+    }
+    #scene { position: fixed; inset: 0; z-index: 1; }
+
+    /* ════════ BUTTERFLY (real image, flapping wings) ════════ */
+    #butterfly {
+      position: fixed;
+      top: 40%; left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 6;
+      width: min(46vw, 440px);
+      perspective: 1100px;
+      animation: hover 7s ease-in-out infinite;
+      filter: drop-shadow(0 22px 30px rgba(0,0,0,.5))
+              drop-shadow(0 0 34px rgba(233,121,249,.28))
+              drop-shadow(0 0 70px rgba(253,230,138,.16));
+    }
+    /* the two halves share the same image, each clipped to one side,
+       then rotate in 3D around the central body axis to flap */
+    #butterfly .wing-img {
+      display: block;
+      width: 100%;
+      height: auto;
+      grid-area: 1 / 1;            /* stack both halves perfectly */
+      transform-origin: center center;
+      backface-visibility: hidden;
+    }
+    #butterfly {
+      display: grid;
+    }
+    #butterfly .left  { clip-path: inset(0 50% 0 0); animation: flapL 1.3s ease-in-out infinite alternate; }
+    #butterfly .right { clip-path: inset(0 0 0 50%); animation: flapR 1.3s ease-in-out infinite alternate; }
+
+    @keyframes flapL {
+      0%   { transform: rotateY(2deg); }
+      100% { transform: rotateY(62deg); }
+    }
+    @keyframes flapR {
+      0%   { transform: rotateY(-2deg); }
+      100% { transform: rotateY(-62deg); }
+    }
+    @keyframes hover {
+      0%,100% { transform: translate(-50%, calc(-50% + 10px)); }
+      50%     { transform: translate(-50%, calc(-50% - 14px)); }
+    }
+
+    /* ════════ Message card ════════ */
+    #card {
+      position: fixed; bottom: 6.5vh; left: 50%;
+      transform: translateX(-50%);
+      z-index: 10; text-align: center;
+      max-width: min(560px, 90vw);
+      padding: 2.4rem 2.8rem 2.2rem;
+      background: rgba(255,255,255,.055);
+      backdrop-filter: blur(18px) saturate(1.4);
+      border: 1px solid rgba(253,230,138,.18);
+      border-radius: 24px;
+      box-shadow: 0 0 60px rgba(233,121,249,.15), 0 0 120px rgba(253,230,138,.06);
+      opacity: 0; animation: cardIn 1.6s ease-out 1s forwards;
+    }
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateX(-50%) translateY(24px); }
+      to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+    #card .eyebrow {
+      font-weight: 300; font-size: .72rem; letter-spacing: .32em;
+      text-transform: uppercase; color: var(--gold); opacity: .8; margin-bottom: .9rem;
+    }
+    #card .headline {
+      font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic;
+      font-size: clamp(1.5rem, 4vw, 2.1rem); line-height: 1.25; color: #fce7f3; margin-bottom: 1.1rem;
+    }
+    #card .body {
+      font-weight: 300; font-size: clamp(.8rem, 2.2vw, .92rem); line-height: 1.8;
+      color: rgba(252,231,243,.72); margin-bottom: 1.4rem;
+    }
+    #card .signature {
+      font-family: 'Cormorant Garamond', serif; font-style: italic;
+      font-size: 1rem; color: var(--gold); opacity: .85;
+    }
+
+    .heart {
+      position: fixed; z-index: 2; pointer-events: none; opacity: 0;
+      animation: heartFloat linear forwards;
+    }
+    @keyframes heartFloat {
+      0%{opacity:0;transform:translateY(0) scale(.6)} 10%{opacity:.7}
+      90%{opacity:.4} 100%{opacity:0;transform:translateY(-55vh) scale(1)}
+    }
+  </style>
+</head>
+<body>
+
+<div id="bg"></div>
+<canvas id="scene"></canvas>
+
+<div id="butterfly">
+  <img class="wing-img left"  src="assets/butterfly.png" alt="" />
+  <img class="wing-img right" src="assets/butterfly.png" alt="" />
+</div>
+
+<div id="vignette"></div>
+
+<div id="card">
+  <p class="eyebrow">a little something for you</p>
+  <h1 class="headline">You are seen, valued,<br>and deeply respected.</h1>
+  <p class="body">
+    Every flutter of these wings is a quiet reminder —
+    that your presence brightens the room,
+    that your peace matters,
+    and that you deserve kindness, calm,
+    and a reason to smile today.
+  </p>
+  <p class="signature">Hope this can make your day, Mariam ❤️✦</p>
+</div>
+
+<script>
+/* ════════ BACKGROUND CANVAS – petals, glows, ambient sparkles ════════ */
+const canvas = document.getElementById('scene');
+const ctx = canvas.getContext('2d');
+let W, H;
+function resize(){ W=canvas.width=innerWidth; H=canvas.height=innerHeight; }
+resize(); addEventListener('resize', resize);
+
+const PETALS = Array.from({length:30}, () => makePetal());
+function makePetal(top=false){
+  return { x:Math.random()*W, y:top?-20:Math.random()*H, size:4+Math.random()*8,
+    rot:Math.random()*Math.PI*2, rotV:(Math.random()-.5)*.04, vx:(Math.random()-.5)*.5,
+    vy:.4+Math.random()*.7, alpha:.25+Math.random()*.5, hue:305+Math.random()*55,
+    drift:Math.random()*Math.PI*2 };
+}
+function updatePetals(){ PETALS.forEach((p,i)=>{ p.drift+=.015;
+  p.x+=p.vx+Math.sin(p.drift)*.6; p.y+=p.vy; p.rot+=p.rotV;
+  if(p.y>H+20) PETALS[i]=makePetal(true); }); }
+function drawPetals(){ PETALS.forEach(p=>{ ctx.save(); ctx.translate(p.x,p.y);
+  ctx.rotate(p.rot); ctx.globalAlpha=p.alpha; ctx.beginPath(); ctx.moveTo(0,-p.size);
+  ctx.bezierCurveTo(p.size*.7,-p.size*.5,p.size*.7,p.size*.5,0,p.size);
+  ctx.bezierCurveTo(-p.size*.7,p.size*.5,-p.size*.7,-p.size*.5,0,-p.size);
+  ctx.fillStyle=`hsl(${p.hue},80%,75%)`; ctx.fill(); ctx.restore(); }); }
+
+const GLOWS = Array.from({length:18}, () => ({
+  x:Math.random()*W, y:Math.random()*H, r:2+Math.random()*4, hue:280+Math.random()*80,
+  phase:Math.random()*Math.PI*2, speed:.005+Math.random()*.01,
+  ax:(Math.random()-.5)*.4, ay:(Math.random()-.5)*.4 }));
+function updateGlows(){ GLOWS.forEach(g=>{ g.phase+=g.speed;
+  g.x+=g.ax+Math.sin(g.phase*1.3)*.3; g.y+=g.ay+Math.cos(g.phase)*.3;
+  if(g.x<0)g.x=W; if(g.x>W)g.x=0; if(g.y<0)g.y=H; if(g.y>H)g.y=0; }); }
+function drawGlows(){ GLOWS.forEach(g=>{ const a=(.4+.6*Math.abs(Math.sin(g.phase)))*.6;
+  const rg=ctx.createRadialGradient(g.x,g.y,0,g.x,g.y,g.r*5);
+  rg.addColorStop(0,`hsla(${g.hue},90%,80%,${a})`); rg.addColorStop(1,`hsla(${g.hue},90%,80%,0)`);
+  ctx.beginPath(); ctx.arc(g.x,g.y,g.r*5,0,Math.PI*2); ctx.fillStyle=rg; ctx.fill(); }); }
+
+const SPARKLES = [];
+function spawnSparkle(){
+  const cx=W*0.5, cy=H*0.40;
+  SPARKLES.push({ x:cx+(Math.random()-.5)*260, y:cy+(Math.random()-.5)*200,
+    vy:-.3-Math.random()*.5, vx:(Math.random()-.5)*.4,
+    life:1, size:1.4+Math.random()*2.4, hue:40+Math.random()*60 });
+}
+function updateSparkles(){ for(let i=SPARKLES.length-1;i>=0;i--){ const s=SPARKLES[i];
+  s.x+=s.vx; s.y+=s.vy; s.life-=.008; if(s.life<=0) SPARKLES.splice(i,1); } }
+function drawSparkles(){ SPARKLES.forEach(s=>{ ctx.save(); ctx.globalAlpha=s.life*.85;
+  ctx.strokeStyle=`hsl(${s.hue},95%,82%)`; ctx.lineWidth=1; ctx.beginPath();
+  ctx.moveTo(s.x-s.size,s.y); ctx.lineTo(s.x+s.size,s.y);
+  ctx.moveTo(s.x,s.y-s.size); ctx.lineTo(s.x,s.y+s.size); ctx.stroke();
+  ctx.beginPath(); ctx.arc(s.x,s.y,s.size*.5,0,Math.PI*2);
+  ctx.fillStyle=`hsl(${s.hue},100%,92%)`; ctx.fill(); ctx.restore(); }); }
+
+let frame=0;
+function loop(){
+  requestAnimationFrame(loop);
+  ctx.clearRect(0,0,W,H);
+  updateGlows(); updatePetals(); updateSparkles();
+  drawGlows(); drawPetals(); drawSparkles();
+  if(frame++ % 8 === 0) spawnSparkle();
+}
+loop();
+
+function spawnHeart(){
+  const el=document.createElement('span'); el.className='heart';
+  el.textContent=['✦','✧','✿','❀','✩'][Math.floor(Math.random()*5)];
+  el.style.left=(10+Math.random()*80)+'vw'; el.style.bottom='0';
+  el.style.fontSize=(.7+Math.random()*.9)+'rem';
+  el.style.color = ['#fde68a','#f9a8d4','#e879f9'][Math.floor(Math.random()*3)];
+  el.style.animationDuration=(5+Math.random()*7)+'s';
+  document.body.appendChild(el); setTimeout(()=>el.remove(),13000);
+}
+setInterval(spawnHeart,1900); setTimeout(spawnHeart,400);
+</script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "name": "cutie-butterfly",
+  "version": "1.0.0",
+  "description": "A gentle animated butterfly made with love and respect.",
+  "scripts": {
+    "start": "npx serve . -l 3000"
+  },
+  "keywords": ["butterfly", "love", "care", "animation"],
+  "license": "MIT"
+}
